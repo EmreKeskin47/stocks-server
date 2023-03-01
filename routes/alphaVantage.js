@@ -48,6 +48,34 @@ var temp = {
 };
 */
 
+//CALENDAR Endpoints
+router.get("/earnings", function (req, res, next) {
+    let key = process.env.ALPHA_API_KEY;
+    let func = "EARNINGS_CALENDAR";
+
+    let response = [];
+    request
+        .get(`https://www.alphavantage.co/query?function=${func}&apikey=${key}`)
+        .pipe(new StringStream())
+        .CSVParse() // parse CSV output into row objects
+        .consume((object) => response.push(object))
+        .then(() => res.send(response));
+});
+
+router.get("/ipo", function (req, res, next) {
+    let key = process.env.ALPHA_API_KEY;
+    let func = "IPO_CALENDAR";
+
+    let response = [];
+    request
+        .get(`https://www.alphavantage.co/query?function=${func}&apikey=${key}`)
+        .pipe(new StringStream())
+        .CSVParse() // parse CSV output into row objects
+        .consume((object) => response.push(object))
+        .then(() => res.send(response));
+});
+
+//Financial Based on Ticker
 /* GET adjusted close prices with given ticker. */
 router.get("/stats/:ticker", function (req, res, next) {
     let symbol = req.params.ticker.toUpperCase();
@@ -112,19 +140,6 @@ router.get("/stats/:ticker", function (req, res, next) {
     });
 });
 
-router.get("/earnings", function (req, res, next) {
-    let key = process.env.ALPHA_API_KEY;
-    let func = "EARNINGS_CALENDAR";
-
-    let response = [];
-    request
-        .get(`https://www.alphavantage.co/query?function=${func}&apikey=${key}`)
-        .pipe(new StringStream())
-        .CSVParse() // parse CSV output into row objects
-        .consume((object) => response.push(object))
-        .then(() => res.send(response));
-});
-
 router.get("/earnings/:ticker", function (req, res, next) {
     let key = process.env.ALPHA_API_KEY;
     let func = "EARNINGS";
@@ -148,19 +163,6 @@ router.get("/earnings/:ticker", function (req, res, next) {
             }
         }
     );
-});
-
-router.get("/ipo", function (req, res, next) {
-    let key = process.env.ALPHA_API_KEY;
-    let func = "IPO_CALENDAR";
-
-    let response = [];
-    request
-        .get(`https://www.alphavantage.co/query?function=${func}&apikey=${key}`)
-        .pipe(new StringStream())
-        .CSVParse() // parse CSV output into row objects
-        .consume((object) => response.push(object))
-        .then(() => res.send(response));
 });
 
 router.get("/cash_flow/:ticker", function (req, res, next) {
