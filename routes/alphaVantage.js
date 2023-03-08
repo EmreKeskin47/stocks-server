@@ -97,7 +97,27 @@ router.get("/stats/:ticker", function (req, res, next) {
 
             let dates = Object.keys(price_date);
             let prices = Object.values(price_date);
-            prices.forEach((price) => {
+            let returns = [];
+            let price_date_graph = [];
+
+            prices.forEach((price, index) => {
+                if (index > 0) {
+                    let old_price = prices[index - 1];
+                    returns.push(
+                        Number(
+                            (price["4. close"] - old_price["4. close"]).toFixed(
+                                2
+                            )
+                        )
+                    );
+                }
+                price_date_graph.push({
+                    open: price["1. open"],
+                    high: price["2. high"],
+                    low: price["3. low"],
+                    close: price["4. close"],
+                    date: dates[index],
+                });
                 close_prices.push(price["4. close"]);
             });
 
@@ -133,8 +153,8 @@ router.get("/stats/:ticker", function (req, res, next) {
                 min_price,
                 range,
                 meta_data,
-                close_prices,
-                dates,
+                returns,
+                price_date_graph,
             });
         }
     });
